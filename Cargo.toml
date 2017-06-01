@@ -1,0 +1,13 @@
+[package]
+name = "grandbec"
+version = "0.1.0"
+authors = ["Joris Rehm <joris.rehm@wakusei.fr>"]
+
+[dependencies]
+gdk = "0.5.3"
+
+
+[dependencies.gtk]
+version = "0.1.3"
+features = ["v3_10"]
+
