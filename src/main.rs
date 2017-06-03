@@ -4,11 +4,18 @@
 use std::rc::*;
 use std::cell::*;
 
+#[macro_use]
+extern crate serde_json;
+#[macro_use]
+extern crate serde_derive;
+
 mod logic; use logic::*;
+mod file; use file::*;
 
 fn main(){
     let data : Rc<RefCell<Data>> = Rc::new(RefCell::new(Data::new()));
     add_default_data(&mut data.borrow_mut());
+    save_all(& data.borrow(),std::path::Path::new("."));
 }
 
 // fn main() {

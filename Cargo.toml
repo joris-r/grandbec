@@ -6,6 +6,9 @@ authors = ["Joris Rehm <joris.rehm@wakusei.fr>"]
 [dependencies]
 gdk = "0.5.3"
 rand = "0.3.15"
+serde = "1.0.8"
+serde_derive = "1.0.8"
+serde_json = "1.0.2"
 
 [dependencies.gtk]
 version = "0.1.3"

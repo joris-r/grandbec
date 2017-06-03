@@ -6,6 +6,7 @@ extern crate rand;
 
 use std::fmt;
 use std::collections::HashMap;
+use std::collections::hash_map;
 
 pub struct Data {
     catalog : Catalog,
@@ -23,7 +24,9 @@ impl Data {
                 sections : HashMap::new(),
                 groups : HashMap::new(),
             },
-            book : Book {},
+            book : Book {
+                recipes : HashMap::new(),
+            },
             planning : Planning {},
             history : History {},
             stock : Stock {},
@@ -34,15 +37,40 @@ impl Data {
         // TODO check if id is unique
         self.catalog.sections.insert(section.id, section.clone());
     }
+    
+    pub fn iter_sections(&self) -> hash_map::Values<Id, Section> {
+        self.catalog.sections.values()
+    }
+    
     pub fn add_group(&mut self, group : &Group) {
         // TODO check if id is unique
         self.catalog.groups.insert(group.id, group.clone());
     }
+    
+    pub fn iter_groups(&self) -> hash_map::Values<Id, Group> {
+        self.catalog.groups.values()
+    }
+    
     pub fn add_ingredient(&mut self, ingredient : &Ingredient) {
         // TODO check if id is unique
         self.catalog.ingredients.insert(ingredient.id, ingredient.clone());
     }
-}
+    
+    pub fn iter_ingredients(&self) -> hash_map::Values<Id, Ingredient> {
+        self.catalog.ingredients.values()
+    }
+        
+    pub fn add_recipe(&mut self, recipe : &Recipe) {
+        // TODO check if id is unique
+        self.book.recipes.insert(recipe.id, recipe.clone());
+    }
+    
+    pub fn iter_recipes(&self) -> hash_map::Values<Id, Recipe> {
+        self.book.recipes.values()
+    }
+        
+} // impl Data
+
         
 struct Catalog {
     ingredients : HashMap<Id,Ingredient>,
@@ -52,6 +80,7 @@ struct Catalog {
 
 
 struct Book {
+    recipes : HashMap<Id,Recipe>,
 }
 
 struct Planning {
@@ -61,6 +90,25 @@ struct History {
 }
 
 struct Stock {
+}
+
+#[derive(Clone)]
+pub struct Recipe {
+    pub id : Id,
+    pub name : String,
+    pub note : String,
+    pub ingredients : Vec<Ingredient>,
+}
+
+impl Recipe {
+    pub fn new(name : &str, note : &str) -> Recipe {
+        Recipe {
+            id : Id::new(),
+            name : name.to_string(),
+            note : note.to_string(),
+            ingredients : vec![],
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -92,8 +140,8 @@ impl Ingredient {
 
 #[derive(Clone)]
 pub struct Group {
-    id : Id,
-    name : String,
+    pub id : Id,
+    pub name : String,
 }
 
 impl Group {
@@ -105,10 +153,10 @@ impl Group {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Section {
-    id : Id,
-    name : String,
+    pub id : Id,
+    pub name : String,
 }
 
 impl Section {
@@ -126,17 +174,20 @@ impl fmt::Display for Section {
     }
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct Quantity {
     val : f64,
     unit : Unit,
 }
 
 
-#[derive(Clone,Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Unit {
+    #[serde(rename = "p")]
     Portion = 0,
+    #[serde(rename = "g")]
     Gram,
+    #[serde(rename = "cl")]
     Centilitre,
 }
 
@@ -163,7 +214,7 @@ impl Id {
 impl fmt::Display for Id {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let Id(id) = *self;
-        write!(f, "{:X}", id)
+        write!(f, "{:016X}", id)
     }
 }
 
@@ -260,5 +311,10 @@ pub fn add_default_data(data : &mut Data) {
         &Quantity{val : 30.0, unit : Unit::Gram},
     );
     data.add_ingredient(&emmental);
+    
+    let mut gloubi = Recipe::new("gloubiboulga","mélanger tout");
+    gloubi.ingredients.push(steak);
+    gloubi.ingredients.push(lait);
+    data.add_recipe(&gloubi);
     
 }
