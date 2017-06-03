@@ -33,9 +33,14 @@ impl Data {
         }
     }
     
+    // TODO faire un move plutot ? (et renvoyer une référece ?)
     pub fn add_section(&mut self, section : &Section) {
         // TODO check if id is unique
         self.catalog.sections.insert(section.id, section.clone());
+    }
+    
+    pub fn get_section(&self, id : Id) -> Option<&Section> {
+        self.catalog.sections.get(&id)
     }
     
     pub fn iter_sections(&self) -> hash_map::Values<Id, Section> {
@@ -47,6 +52,10 @@ impl Data {
         self.catalog.groups.insert(group.id, group.clone());
     }
     
+    pub fn get_group(&self, id : Id) -> Option<&Group> {
+        self.catalog.groups.get(&id)
+    }
+    
     pub fn iter_groups(&self) -> hash_map::Values<Id, Group> {
         self.catalog.groups.values()
     }
@@ -54,6 +63,10 @@ impl Data {
     pub fn add_ingredient(&mut self, ingredient : &Ingredient) {
         // TODO check if id is unique
         self.catalog.ingredients.insert(ingredient.id, ingredient.clone());
+    }
+    
+    pub fn get_ingredient(&self, id : Id) -> Option<&Ingredient> {
+        self.catalog.ingredients.get(&id)
     }
     
     pub fn iter_ingredients(&self) -> hash_map::Values<Id, Ingredient> {
@@ -203,7 +216,7 @@ impl fmt::Display for Unit {
 }
 
 #[derive(Clone,Copy,PartialEq,Eq,Hash)]
-pub struct Id( u64 );
+pub struct Id( pub u64 );
 
 impl Id {
     fn new() -> Id {

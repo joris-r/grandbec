@@ -87,3 +87,93 @@ fn serialize_ingredient_use(ingredient : & Ingredient) -> Value {
         "quantity" : ingredient.quantity,
     })
 }
+
+pub fn load_all(data : &mut Data, path : &Path) {
+    use std::fs::File;
+    use serde_json::value::from_value;
+    {
+        let file = File::open(path.join(CATALOG_FILE_NAME)).unwrap();
+        let json: Value = serde_json::from_reader(file).unwrap();
+        let json = json.as_object().unwrap();
+        
+        let sections = json
+            .get("sections").unwrap()
+            .as_array().unwrap();
+        let groups = json
+            .get("groups").unwrap()
+            .as_array().unwrap();
+        let ingredients = json
+            .get("ingredients").unwrap()
+            .as_array().unwrap();
+        
+        for section in sections {
+            let id = deserialize_id(&section["id"]);
+            let name = section["name"].as_str().unwrap();
+            // TODO convertion own/ref pas performante et pas logique
+            data.add_section(&Section{id:id, name:name.to_string()});
+        }
+        
+        for group in groups {
+            let id = deserialize_id(&group["id"]);
+            let name = group["name"].as_str().unwrap();
+            // TODO convertion own/ref pas performante et pas logique
+            data.add_group(&Group{id:id, name:name.to_string()});
+        }
+        
+        for ingredient in ingredients {
+            let id = deserialize_id(&ingredient["id"]);
+            let name = ingredient["name"].as_str().unwrap();
+            let group_id = deserialize_id(&ingredient["group"]);
+            let group = data.get_group(group_id).unwrap().clone();
+            let section_id = deserialize_id(&ingredient["section"]);
+            let section = data.get_section(section_id).unwrap().clone();
+            let quantity = ingredient["quantity"].clone();
+            let quantity : Quantity = from_value(quantity).unwrap();
+            data.add_ingredient(&Ingredient{
+                id : id,
+                name : name.to_string(),
+                group : group,
+                section : section,
+                quantity : quantity,
+            });
+        }
+    }
+    {
+        let file = File::open(path.join(BOOK_FILE_NAME)).unwrap();
+        let json: Value = serde_json::from_reader(file).unwrap();
+        let json = json.as_object().unwrap();
+        
+        let recipes = json
+            .get("recipes").unwrap()
+            .as_array().unwrap();
+        for recipe in recipes {
+            let id = deserialize_id(&recipe["id"]);
+            let name = recipe["name"].as_str().unwrap();
+            let note = recipe["note"].as_str().unwrap();
+            let ingredients = recipe
+                .get("ingredients").unwrap()
+                .as_array().unwrap();
+            let mut r = Recipe {
+                id : id,
+                name : name.to_string(),
+                note : note.to_string(),
+                ingredients : vec![],
+            };
+            for ingredient in ingredients {
+                let id = deserialize_id(&ingredient["id"]);
+                let quantity = ingredient["quantity"].clone();
+                let quantity : Quantity = from_value(quantity).unwrap();
+                let mut i = data.get_ingredient(id).unwrap().clone();
+                i.quantity = quantity;
+                r.ingredients.push(i);
+            }
+            data.add_recipe(&r);
+        }
+    }
+}
+
+fn deserialize_id(json : &Value) -> Id {
+    let id = json.as_str().unwrap();
+    let id = u64::from_str_radix(id, 16).unwrap();
+    Id(id)
+}

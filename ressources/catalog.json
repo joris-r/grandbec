@@ -1,0 +1,146 @@
+{
+    "groups": [
+        {
+            "id": "964F1752EA6B1F8F",
+            "name": "Protéine"
+        },
+        {
+            "id": "9C7E204D4FB525A7",
+            "name": "Fromage"
+        },
+        {
+            "id": "965EB81880FDBD60",
+            "name": "Fruit"
+        },
+        {
+            "id": "8401482BB760EBC1",
+            "name": "Féculent"
+        },
+        {
+            "id": "6FB75507B86AA70F",
+            "name": "Graisse"
+        },
+        {
+            "id": "B734CD6F825CBE05",
+            "name": "Légume"
+        },
+        {
+            "id": "EF230FC81D90DEC2",
+            "name": "Laitage"
+        }
+    ],
+    "ingredients": [
+        {
+            "group": "965EB81880FDBD60",
+            "id": "A98F391382877A2B",
+            "name": "pomme",
+            "quantity": {
+                "unit": "p",
+                "val": 1.0
+            },
+            "section": "D0D1A0ACE7105443"
+        },
+        {
+            "group": "8401482BB760EBC1",
+            "id": "7E506FAFAEC6D43D",
+            "name": "tranche de pain",
+            "quantity": {
+                "unit": "p",
+                "val": 1.0
+            },
+            "section": "2C650EE9BE715FB2"
+        },
+        {
+            "group": "964F1752EA6B1F8F",
+            "id": "7B3B9E355A514066",
+            "name": "steak haché",
+            "quantity": {
+                "unit": "p",
+                "val": 1.0
+            },
+            "section": "75D62D767CF7276D"
+        },
+        {
+            "group": "B734CD6F825CBE05",
+            "id": "4402552E66A79AB6",
+            "name": "tomate fraiche",
+            "quantity": {
+                "unit": "p",
+                "val": 1.0
+            },
+            "section": "D0D1A0ACE7105443"
+        },
+        {
+            "group": "9C7E204D4FB525A7",
+            "id": "32DADA3DE5C51799",
+            "name": "emmental",
+            "quantity": {
+                "unit": "g",
+                "val": 30.0
+            },
+            "section": "0EACFBABA033FF44"
+        },
+        {
+            "group": "6FB75507B86AA70F",
+            "id": "869E9097D6F32C8E",
+            "name": "huile",
+            "quantity": {
+                "unit": "cl",
+                "val": 5.0
+            },
+            "section": "2C650EE9BE715FB2"
+        },
+        {
+            "group": "EF230FC81D90DEC2",
+            "id": "101E8A1E6C94A777",
+            "name": "lait",
+            "quantity": {
+                "unit": "p",
+                "val": 1.0
+            },
+            "section": "0EACFBABA033FF44"
+        }
+    ],
+    "sections": [
+        {
+            "id": "2C650EE9BE715FB2",
+            "name": "Autre"
+        },
+        {
+            "id": "D0D1A0ACE7105443",
+            "name": "Primeur"
+        },
+        {
+            "id": "FF7E33A03AB79878",
+            "name": "Surgelé"
+        },
+        {
+            "id": "75D62D767CF7276D",
+            "name": "Viande"
+        },
+        {
+            "id": "4C4422E13210AFA9",
+            "name": "Poisson"
+        },
+        {
+            "id": "E9DC279F3AB47562",
+            "name": "Féculents"
+        },
+        {
+            "id": "AADACEA2CB68E086",
+            "name": "Bio"
+        },
+        {
+            "id": "0EACFBABA033FF44",
+            "name": "Crémerie"
+        },
+        {
+            "id": "3FBC0599B7484ECD",
+            "name": "Condiment"
+        },
+        {
+            "id": "F4702AE6AE606B8A",
+            "name": "Boisson"
+        }
+    ]
+}

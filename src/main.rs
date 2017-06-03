@@ -14,8 +14,8 @@ mod file; use file::*;
 
 fn main(){
     let data : Rc<RefCell<Data>> = Rc::new(RefCell::new(Data::new()));
-    add_default_data(&mut data.borrow_mut());
-    save_all(& data.borrow(),std::path::Path::new("."));
+    load_all(&mut data.borrow_mut(), std::path::Path::new("ressources"));
+    save_all(& data.borrow(), std::path::Path::new("."));
 }
 
 // fn main() {
