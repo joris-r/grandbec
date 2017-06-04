@@ -95,8 +95,8 @@
             "id": "101E8A1E6C94A777",
             "name": "lait",
             "quantity": {
-                "unit": "p",
-                "val": 1.0
+                "unit": "cl",
+                "val": 30.0
             },
             "section": "0EACFBABA033FF44"
         }

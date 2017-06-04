@@ -52,6 +52,12 @@ fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
     notebook.append_page(&book_pane, Some(&gtk::Label::new("Recettes")));
     
     let recipies_list = gtk::ListBox::new();
+    
+    // TODO bug: doesn't work
+    recipies_list.set_activate_on_single_click(true);
+    // anyway the propertie was true already
+    
+    recipies_list.set_selection_mode(gtk::SelectionMode::None);
     book_pane.add1(&recipies_list);
     book_pane.add2(&gtk::Label::new("Pas de recette selectionnée"));
 
@@ -65,13 +71,14 @@ fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
         let recipe_id = recipe.id;
         let data_clone = data.clone();
         row.connect_activate(move |_| {
-            show_recipe_content(&data_clone.borrow(), &book_pane_clone, recipe_id);
+            show_recipe_content(&data_clone, &book_pane_clone, recipe_id);
         });
         
     }
 }
 
-fn show_recipe_content(dref : &Ref<Data>, book_pane : &gtk::Paned, recipe_id : Id) {
+fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_id : Id) {
+    let dref = data.borrow();
     let recipe = dref.get_recipe(recipe_id).unwrap();
     book_pane.get_child2().unwrap().destroy();
     
@@ -82,47 +89,143 @@ fn show_recipe_content(dref : &Ref<Data>, book_pane : &gtk::Paned, recipe_id : I
     frame.add(&grid);
     grid.set_orientation(gtk::Orientation::Vertical);
     
+    // Modify Button
+    let modify_but = gtk::Button::new_with_label("Modifier");
+    grid.add(&modify_but);
+    
+    let book_pane_clone = book_pane.clone();
+    let data_clone = data.clone();
+    modify_but.connect_clicked(move |_| {
+        show_recipe_edit(&data_clone, &book_pane_clone , recipe_id);
+    });
+    
+    // Ingredients list
     grid.add(&gtk::Label::new("Ingrédients"));
     
     for i in &recipe.ingredients {
-        grid.add(&gtk::Label::new(&i.name as &str));
+        let s = format!("{} {}", i.quantity, i.name);
+        grid.add(&gtk::Label::new(&s as &str));
     }
     
+    // Instruction text
+    let note_frame = gtk::Frame::new("Instructions");
+    grid.add(&note_frame);
+    note_frame.set_size_request(300,150);
+    note_frame.add(&gtk::Label::new(&recipe.note as &str));
+
     frame.show_all();
 }
 
-// fn create_combo_of_unit(unit : & Unit) -> gtk::ComboBoxText {
-//     let c = gtk::ComboBoxText::new();
-//     c.insert_text(Unit::Gram as i32, &Unit::Gram.to_string());
-//     c.insert_text(Unit::Centilitre as i32, &Unit::Centilitre.to_string());
-//     c.set_active(*unit as i32);
-//     return c;
-// }
+fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_id : Id) {
+
+    data.borrow_mut().clone_into_edited_recipe(recipe_id);
+
+    let recipe = data.borrow().get_recipe(recipe_id).unwrap().clone();
+    book_pane.get_child2().unwrap().destroy();
+    
+    let edit_pane = gtk::Paned::new(gtk::Orientation::Horizontal);
+    book_pane.add2(&edit_pane);
+    edit_pane.set_wide_handle(true);
+    
+    let frame = gtk::Frame::new(Some(&recipe.name as &str));
+    edit_pane.add1(&frame);
+    
+    let ingredients = give_ingredients_list(data);
+    edit_pane.add2(&ingredients);
+    
+    let grid = gtk::Grid::new();
+    frame.add(&grid);
+    grid.set_orientation(gtk::Orientation::Vertical);
+    
+    // Cancel Button
+    let cancel_but = gtk::Button::new_with_label("Annuler");
+    grid.add(&cancel_but);
+
+    let book_pane_clone = book_pane.clone();
+    let data_clone = data.clone();
+    cancel_but.connect_clicked(move |_| {
+        show_recipe_content(&data_clone, &book_pane_clone , recipe_id);
+    });
+    
+    // Accept Button
+    let valid_but = gtk::Button::new_with_label("Valider");
+    grid.add(&valid_but);
+    
+    // Ingredients list
+    grid.add(&gtk::Label::new("Ingrédients"));
+    
+    for i in &recipe.ingredients {
+        let line = gtk::Grid::new();
+        grid.add(&line);
+        
+        let qty = gtk::SpinButton::new_with_range(
+            1.0, 1000.0, 1.0);
+        line.add(&qty);
+        qty.set_digits(1);
+        qty.set_value(i.quantity.val);
+        
+//         let data_clone = data.clone();
+//         qty.connect_value_changed(|w| {
+            // TODO
+//         };
+        
+        let unit = create_combo_of_unit(&i.quantity.unit);
+        line.add(&unit);
+        
+        line.add(&gtk::Label::new(&i.name as &str));
+    }
+    
+    // Instruction text
+    let note_frame = gtk::Frame::new("Instructions");
+    grid.add(&note_frame);
+    note_frame.set_size_request(300,150);
+    
+    let tb = gtk::TextBuffer::new(None);
+    tb.set_text(&recipe.note as &str);
+    let tv = gtk::TextView::new_with_buffer(&tb);
+    note_frame.add(&tv);
+    
+    // Accept Button action
+    let book_pane_clone = book_pane.clone();
+    let data_clone = data.clone();
+    let tb_clone = tb.clone();
+    valid_but.connect_clicked(move |_| {
+        let new_note = tb_clone.get_text(
+            &tb_clone.get_start_iter(),
+            &tb_clone.get_end_iter(),
+            false).unwrap();
+        data_clone.borrow_mut().edited_recipe.note = new_note;
+        data_clone.borrow_mut().save_edited_recipe();
+        show_recipe_content(&data_clone, &book_pane_clone , recipe_id);
+    });
+    
+    // finish
+    edit_pane.show_all();
+}
+
+fn give_ingredients_list(data : &Rc<RefCell<Data>>) -> gtk::ListBox {
+    let list = gtk::ListBox::new();
+    
+    for i in data.borrow().iter_ingredients() {
+        let row = gtk::ListBoxRow::new();
+        list.add(&row);
+        let widget = gtk::Label::new(&i.name as &str);
+        row.add(&widget);
+    }
+    
+    list
+}
+
+fn create_combo_of_unit(unit : & Unit) -> gtk::ComboBoxText {
+    let c = gtk::ComboBoxText::new();
+    c.insert_text(Unit::Portion as i32, &Unit::Portion.to_string());
+    c.insert_text(Unit::Gram as i32, &Unit::Gram.to_string());
+    c.insert_text(Unit::Centilitre as i32, &Unit::Centilitre.to_string());
+    c.set_active(*unit as i32);
+    return c;
+}
 
 
-// fn show_planning(target : &gtk::ListBox, catalog : Rc<RefCell<Catalog>>) {
-//     let days = [
-//         "lundi",
-//         "mardi",
-//         "mercredi",
-//         "jeudi",
-//         "vendredi",
-//         "samedi",
-//         "dimanche",
-//     ];
-//     let lunchs = [
-//         "petit-déjeuner",
-//         "déjeuner",
-//         "gouter",
-//         "diner",
-//     ];
-//     for day in days.iter() {
-//         for lunch in lunchs.iter() {
-//             show_empty_lunch(target, &format!("{} {}", day, lunch), catalog.clone());
-//         }
-//     }
-// }
-// 
 // fn show_empty_lunch(target : & gtk::ListBox, label : &str, catalog : Rc<RefCell<Catalog>>) {
 //     let targets = vec![
 //         gtk::TargetEntry::new("STRING", gtk::TARGET_SAME_APP, 0),
@@ -152,7 +255,7 @@ fn show_recipe_content(dref : &Ref<Data>, book_pane : &gtk::Paned, recipe_id : I
 //         line.show_all();
 //     });
 // }
-// 
+
 // fn create_part(part : & Part) -> gtk::EventBox {
 // 
 //     let targets = vec![
@@ -196,12 +299,4 @@ fn show_recipe_content(dref : &Ref<Data>, book_pane : &gtk::Paned, recipe_id : I
 //     line.add(&gtk::Label::new(&section as &str));
 // 
 //     return eventbox;
-// }
-// 
-// fn show_catalogue(target : &gtk::ListBox, catalog : Rc<RefCell<Catalog>>) {
-// 
-//     for p in &catalog.borrow().list {
-//         let line = create_part(p);
-//         target.add(&line);
-//     }
 // }

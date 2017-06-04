@@ -14,6 +14,8 @@ pub struct Data {
     planning : Planning,
     history : History,
     stock : Stock,
+    
+    pub edited_recipe : Recipe,
 }
 
 impl Data {
@@ -30,6 +32,13 @@ impl Data {
             planning : Planning {},
             history : History {},
             stock : Stock {},
+            
+            edited_recipe : Recipe {
+                id : Id::new(),
+                name : "".to_string(),
+                note : "".to_string(),
+                ingredients : vec![],
+            }
         }
     }
     
@@ -84,6 +93,17 @@ impl Data {
     
     pub fn iter_recipes(&self) -> hash_map::Values<Id, Recipe> {
         self.book.recipes.values()
+    }
+    
+    pub fn clone_into_edited_recipe(&mut self, id : Id) {
+        let r = self.book.recipes.get(&id).unwrap();
+        self.edited_recipe = r.clone();
+    }
+    
+    pub fn save_edited_recipe(&mut self) {
+        self.book.recipes.insert(
+            self.edited_recipe.id,
+            self.edited_recipe.clone());
     }
     
 } // impl Data
@@ -191,10 +211,21 @@ impl fmt::Display for Section {
     }
 }
 
+
 #[derive(Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct Quantity {
-    val : f64,
-    unit : Unit,
+    pub val : f64,
+    pub unit : Unit,
+}
+
+impl fmt::Display for Quantity {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.unit == Unit::Portion {
+            write!(f, "{}", self.val)
+        } else {
+            write!(f, "{} {}", self.val, self.unit)
+        }
+    }
 }
 
 
@@ -209,12 +240,12 @@ pub enum Unit {
 }
 
 impl fmt::Display for Unit {
-        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            let printable = match *self {
-                Unit::Portion => "u.",
-                Unit::Gram => "g",
-                Unit::Centilitre => "cl",
-            };
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let printable = match *self {
+            Unit::Portion => "unité",
+            Unit::Gram => "g",
+            Unit::Centilitre => "cl",
+        };
         write!(f, "{}", printable)
     }
 }
