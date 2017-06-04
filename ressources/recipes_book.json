@@ -18,8 +18,22 @@
                     }
                 }
             ],
-            "name": "gloubiboula",
+            "name": "gloubiboulga",
             "note": "mélanger tout"
+        },
+        {
+            "id": "94A68E9754D4620B",
+            "ingredients": [
+                {
+                    "id": "7B3B9E355A514066",
+                    "quantity": {
+                        "unit": "p",
+                        "val": 1.0
+                    }
+                }
+            ],
+            "name": "truc",
+            "note": "prendre ingrédient"
         }
     ]
 }

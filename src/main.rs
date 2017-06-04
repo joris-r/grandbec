@@ -1,6 +1,8 @@
+extern crate gtk;
+use gtk::prelude::*;
+
 // extern crate gdk;
-// extern crate gtk;
-// use gtk::prelude::*;
+
 use std::rc::*;
 use std::cell::*;
 
@@ -15,30 +17,80 @@ mod file; use file::*;
 fn main(){
     let data : Rc<RefCell<Data>> = Rc::new(RefCell::new(Data::new()));
     load_all(&mut data.borrow_mut(), std::path::Path::new("ressources"));
+    main_gui(data.clone());
     save_all(& data.borrow(), std::path::Path::new("."));
 }
 
-// fn main() {
-//     if gtk::init().is_err() {
-//         println!("Failed to initialize GTK.");
-//         return;
-//     }
-// 
-//     let window = gtk::Window::new(gtk::WindowType::Toplevel);
-//     
-//     window.set_title("Grand Bec Project");
-//     window.connect_delete_event(|_, _| {
-//         gtk::main_quit();
-//         Inhibit(false)
-//     });
-//     
-//         
-//     setup(window.clone(), catalog.clone());
-//     
-//     window.show_all();
-//     gtk::main();
-// }
-// 
+fn main_gui(data : Rc<RefCell<Data>>) {
+    if gtk::init().is_err() {
+        println!("Failed to initialize GTK.");
+        return;
+    }
+
+    let window = gtk::Window::new(gtk::WindowType::Toplevel);
+    window.set_size_request(640,480);
+    
+    window.set_title("Grand Bec Project");
+    window.connect_delete_event(|_, _| {
+        gtk::main_quit();
+        Inhibit(false)
+    });
+        
+    setup(window.clone(), data.clone());
+    
+    window.show_all();
+    gtk::main();
+}
+
+fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
+
+    let notebook = gtk::Notebook::new();
+    window.add(&notebook);
+    
+    let book_pane = gtk::Paned::new(gtk::Orientation::Horizontal);
+    book_pane.set_wide_handle(true);
+    notebook.append_page(&book_pane, Some(&gtk::Label::new("Recettes")));
+    
+    let recipies_list = gtk::ListBox::new();
+    book_pane.add1(&recipies_list);
+    book_pane.add2(&gtk::Label::new("Pas de recette selectionnée"));
+
+    for recipe in data.borrow().iter_recipes() {
+        let row = gtk::ListBoxRow::new();
+        recipies_list.add(&row);
+        let widget = gtk::Label::new(&recipe.name as &str);
+        row.add(&widget);
+        
+        let book_pane_clone = book_pane.clone();
+        let recipe_id = recipe.id;
+        let data_clone = data.clone();
+        row.connect_activate(move |_| {
+            show_recipe_content(&data_clone.borrow(), &book_pane_clone, recipe_id);
+        });
+        
+    }
+}
+
+fn show_recipe_content(dref : &Ref<Data>, book_pane : &gtk::Paned, recipe_id : Id) {
+    let recipe = dref.get_recipe(recipe_id).unwrap();
+    book_pane.get_child2().unwrap().destroy();
+    
+    let frame = gtk::Frame::new(Some(&recipe.name as &str));
+    book_pane.add2(&frame);
+    
+    let grid = gtk::Grid::new();
+    frame.add(&grid);
+    grid.set_orientation(gtk::Orientation::Vertical);
+    
+    grid.add(&gtk::Label::new("Ingrédients"));
+    
+    for i in &recipe.ingredients {
+        grid.add(&gtk::Label::new(&i.name as &str));
+    }
+    
+    frame.show_all();
+}
+
 // fn create_combo_of_unit(unit : & Unit) -> gtk::ComboBoxText {
 //     let c = gtk::ComboBoxText::new();
 //     c.insert_text(Unit::Gram as i32, &Unit::Gram.to_string());
@@ -46,27 +98,8 @@ fn main(){
 //     c.set_active(*unit as i32);
 //     return c;
 // }
-// 
-// fn setup(window : gtk::Window, catalog : Rc<RefCell<Catalog>>) {
-// 
-//     // division par deux panneaux
-//     let paned = gtk::Paned::new(gtk::Orientation::Horizontal);
-//     window.add(&paned);
-// 
-//     // partie gauche : le planning
-//     let left = gtk::ListBox::new();
-//     paned.add1(&left);
-//     left.set_size_request(300,300);
-//     show_planning(&left, catalog.clone());
-// 
-//     // partie droite : le catalogue d'ingrédients
-//     let right = gtk::ListBox::new();
-//     paned.add2(&right);
-//     right.set_size_request(300,300);
-//     show_catalogue(&right, catalog.clone());
-//     
-// }
-// 
+
+
 // fn show_planning(target : &gtk::ListBox, catalog : Rc<RefCell<Catalog>>) {
 //     let days = [
 //         "lundi",

@@ -77,11 +77,15 @@ impl Data {
         // TODO check if id is unique
         self.book.recipes.insert(recipe.id, recipe.clone());
     }
+        
+    pub fn get_recipe(&self, id : Id) -> Option<&Recipe> {
+        self.book.recipes.get(&id)
+    }
     
     pub fn iter_recipes(&self) -> hash_map::Values<Id, Recipe> {
         self.book.recipes.values()
     }
-        
+    
 } // impl Data
 
         
