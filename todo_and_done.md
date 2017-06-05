@@ -1,5 +1,53 @@
 
 
+TODO
+=====
+
+GUI deletion of recipe.
+
+GUI creation of a new recipe.
+
+GUI edition of recipe : edition of recipe name.
+
+GUI edition of recipe: ingredient removing.
+
+GUI edition of recipe: renaming of recipe.
+
+
+DONE
+=====
+
+GUI edition of recipe: ingredient quantity value and unit edition.
+
+GUI edition of recipe: ingredient adding (with listing of all ingredient)
+
+GUI edition of recipe: edition of intruction content.
+
+GUI view of one recipe with name, intruction, ingredients list.
+
+GUI view of the recipe list.
+
+Data file save/load of the ingredient catalog (with section and group).
+
+Data file save/load of the recipe book.
+
+Data model for a list of recipe.
+
+Data model for cooking recipe.
+
+Data model for catalog of ingredient with list of shop section and food group.
+
+Data model for ingredient.
+
+Data model for ingredient quantity with unit.
+
+Data model for shop sections.
+
+Data model for food group.
+
+
+-------------------------------------
+
 
 doit gérer (créer/modifier/suppr) des recettes de cuisines, des listes de course, des planning, historique de planning, liste d'achat récurent
 
