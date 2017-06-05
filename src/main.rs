@@ -52,18 +52,29 @@ fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
     notebook.append_page(&book_pane, Some(&gtk::Label::new("Recettes")));
     
     let recipies_list = gtk::ListBox::new();
-    recipies_list.set_selection_mode(gtk::SelectionMode::None);
+    
+    // workaround for the activation problem
+    recipies_list.set_selection_mode(gtk::SelectionMode::Single);
+    recipies_list.connect_row_selected(move |_,olbr| {
+        match olbr {
+            &Some(ref lbr) => {lbr.activate();},
+            _ => {},
+        }
+    });
+    
     book_pane.add1(&recipies_list);
     book_pane.add2(&gtk::Label::new("Pas de recette selectionnée"));
 
     for recipe in data.borrow().iter_recipes() {
-        let widget = gtk::Button::new_with_label(&recipe.name as &str);
-        recipies_list.add(&widget);
+        let row = gtk::ListBoxRow::new();
+        recipies_list.add(&row);
+        let widget = gtk::Label::new(&recipe.name as &str);
+        row.add(&widget);
         
         let book_pane_clone = book_pane.clone();
         let recipe_id = recipe.id;
         let data_clone = data.clone();
-        widget.connect_clicked(move |_| {
+        row.connect_activate(move |_| {
             show_recipe_content(&data_clone, &book_pane_clone, recipe_id);
         });
         
@@ -128,15 +139,28 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
     
     // Ingredients Catalog on the right pane
     let list_ingr = gtk::ListBox::new();
+    edit_pane.add2(&list_ingr);
+    
+    // workaround for the activation problem
+    list_ingr.set_selection_mode(gtk::SelectionMode::Single);
+    list_ingr.connect_row_selected(move |_,olbr| {
+        match olbr {
+            &Some(ref lbr) => {lbr.activate();},
+            _ => {},
+        }
+    });
+    
     for i in data.borrow().iter_ingredients() {
-        let widget = gtk::Button::new_with_label(&i.name as &str);
-        list_ingr.add(&widget);
+        let row = gtk::ListBoxRow::new();
+        list_ingr.add(&row);
+        let widget = gtk::Label::new(&i.name as &str);
+        row.add(&widget);
         
         // add new ingredient to the recipe
         let data_clone = data.clone();
         let new_ingr_id = i.id;
         let book_pane_clone = book_pane.clone();
-        widget.connect_clicked(move |_| {
+        row.connect_activate(move |_| {
             let ingr = data_clone.borrow()
                 .get_ingredient(new_ingr_id).unwrap().clone();
             data_clone.borrow_mut().edited_recipe
@@ -146,8 +170,6 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
         });
         
     }
-    list_ingr.set_selection_mode(gtk::SelectionMode::None);
-    edit_pane.add2(&list_ingr);
     
     let grid = gtk::Grid::new();
     frame.add(&grid);
@@ -230,19 +252,6 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
     
     // finish
     edit_pane.show_all();
-}
-
-fn give_ingredients_list(data : &Rc<RefCell<Data>>) -> gtk::ListBox {
-    let list = gtk::ListBox::new();
-    
-    for i in data.borrow().iter_ingredients() {
-        let row = gtk::ListBoxRow::new();
-        list.add(&row);
-        let widget = gtk::Label::new(&i.name as &str);
-        row.add(&widget);
-    }
-    
-    list
 }
 
 fn create_combo_of_unit(unit : & Unit) -> gtk::ComboBoxText {
