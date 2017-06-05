@@ -102,8 +102,8 @@ fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recip
     // Ingredients list
     grid.add(&gtk::Label::new("Ingrédients"));
     
-    for i in &recipe.ingredients {
-        let s = format!("{} {}", i.quantity, i.name);
+    for i in recipe.ingredients.values() {
+        let s = format!("{} {}", (*i).quantity, i.name);
         grid.add(&gtk::Label::new(&s as &str));
     }
     
@@ -154,7 +154,7 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_i
     // Ingredients list
     grid.add(&gtk::Label::new("Ingrédients"));
     
-    for i in &recipe.ingredients {
+    for i in recipe.ingredients.values() {
         let line = gtk::Grid::new();
         grid.add(&line);
         
@@ -162,15 +162,28 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_i
             1.0, 1000.0, 1.0);
         line.add(&qty);
         qty.set_digits(1);
-        qty.set_value(i.quantity.val);
+        qty.set_value((*i).quantity.val);
         
-//         let data_clone = data.clone();
-//         qty.connect_value_changed(|w| {
-            // TODO
-//         };
+        // store quantity change
+        let data_clone = data.clone();
+        let i_id = i.id;
+        qty.connect_value_changed(move |w| {
+            data_clone.borrow_mut().edited_recipe
+                .ingredients.get_mut(&i_id).unwrap()
+                .quantity.val = w.get_value();
+        });
         
         let unit = create_combo_of_unit(&i.quantity.unit);
         line.add(&unit);
+        
+        // store unit change
+        let data_clone = data.clone();
+        let i_id = i.id;
+        unit.connect_changed(move |w| {
+            data_clone.borrow_mut().edited_recipe
+                .ingredients.get_mut(&i_id).unwrap()
+                .quantity.unit = read_unit(&w);
+        });
         
         line.add(&gtk::Label::new(&i.name as &str));
     }
@@ -223,6 +236,14 @@ fn create_combo_of_unit(unit : & Unit) -> gtk::ComboBoxText {
     c.insert_text(Unit::Centilitre as i32, &Unit::Centilitre.to_string());
     c.set_active(*unit as i32);
     return c;
+}
+
+fn read_unit(widget : &gtk::ComboBoxText) -> Unit {
+    let val = widget.get_active();
+    if val == Unit::Portion as i32 { Unit::Portion }
+    else if val == Unit::Gram as i32 { Unit::Gram }
+    else if val == Unit::Centilitre as i32 { Unit::Centilitre }
+    else { panic!("wrong Unit id") }
 }
 
 

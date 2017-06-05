@@ -4,6 +4,7 @@ extern crate serde_json;
 use serde_json::value::Value;
 
 use std::path::Path;
+use std::collections::HashMap;
 
 use logic::*;
 
@@ -49,7 +50,7 @@ pub fn save_all(data : &Data, path : &Path) {
     {
         let mut recipes = vec![];
         for ref recipe in data.iter_recipes() {
-            let ingredients = recipe.ingredients.iter()
+            let ingredients = recipe.ingredients.values()
                 .map(serialize_ingredient_use)
                 .collect();
             let json = json!({
@@ -157,7 +158,7 @@ pub fn load_all(data : &mut Data, path : &Path) {
                 id : id,
                 name : name.to_string(),
                 note : note.to_string(),
-                ingredients : vec![],
+                ingredients : HashMap::new(),
             };
             for ingredient in ingredients {
                 let id = deserialize_id(&ingredient["id"]);
@@ -165,7 +166,7 @@ pub fn load_all(data : &mut Data, path : &Path) {
                 let quantity : Quantity = from_value(quantity).unwrap();
                 let mut i = data.get_ingredient(id).unwrap().clone();
                 i.quantity = quantity;
-                r.ingredients.push(i);
+                r.ingredients.insert(i.id,i);
             }
             data.add_recipe(&r);
         }

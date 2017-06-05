@@ -37,7 +37,7 @@ impl Data {
                 id : Id::new(),
                 name : "".to_string(),
                 note : "".to_string(),
-                ingredients : vec![],
+                ingredients : HashMap::new(),
             }
         }
     }
@@ -134,7 +134,7 @@ pub struct Recipe {
     pub id : Id,
     pub name : String,
     pub note : String,
-    pub ingredients : Vec<Ingredient>,
+    pub ingredients : HashMap<Id,Ingredient>,
 }
 
 impl Recipe {
@@ -143,7 +143,7 @@ impl Recipe {
             id : Id::new(),
             name : name.to_string(),
             note : note.to_string(),
-            ingredients : vec![],
+            ingredients : HashMap::new(),
         }
     }
 }
