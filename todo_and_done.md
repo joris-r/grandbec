@@ -19,16 +19,34 @@ Data model for grocery list.
 
 Data model for planning with days, lunchs.
 
+GUI edition of recipe: renaming of recipe. Update name in the left pane
+recipes list.
+
+GUI grocery section deletion.
+GUI grocery section renaming.
+GUI grocery section creation.
+
+GUI food group deletion.
+GUI food group renaming.
+GUI food group creation.
+
+GUI ingredient edit grocery section
+GUI ingredient edit food group
+GUI ingredient edit default quantity
+
+GUI ingredient deletion
+GUI ingredient renaming
+GUI ingredient creation
+
 GUI deletion of recipe.
 
 GUI creation of a new recipe.
 
-GUI edition of recipe: renaming of recipe.
-
-
 
 DONE
 =====
+
+GUI edition of recipe: renaming of recipe.
 
 GUI edition of recipe: ingredient removing.
 

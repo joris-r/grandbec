@@ -189,6 +189,18 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
     let valid_but = gtk::Button::new_with_label("Valider");
     grid.add(&valid_but);
     
+    // renaming
+    let name_eb = gtk::EntryBuffer::new(Some(&recipe.name as &str));
+    let name_e = gtk::Entry::new_with_buffer(&name_eb);
+    grid.add(&name_e);
+    
+    let data_clone = data.clone();
+    let name_eb_clone = name_eb.clone();
+    name_e.connect_changed(move |_| {
+        data_clone.borrow_mut().edited_recipe.name =
+            name_eb_clone.get_text();
+    });
+    
     // Ingredients list
     grid.add(&gtk::Label::new("Ingrédients"));
     
