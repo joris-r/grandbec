@@ -52,25 +52,18 @@ fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
     notebook.append_page(&book_pane, Some(&gtk::Label::new("Recettes")));
     
     let recipies_list = gtk::ListBox::new();
-    
-    // TODO bug: doesn't work
-    recipies_list.set_activate_on_single_click(true);
-    // anyway the propertie was true already
-    
     recipies_list.set_selection_mode(gtk::SelectionMode::None);
     book_pane.add1(&recipies_list);
     book_pane.add2(&gtk::Label::new("Pas de recette selectionnée"));
 
     for recipe in data.borrow().iter_recipes() {
-        let row = gtk::ListBoxRow::new();
-        recipies_list.add(&row);
-        let widget = gtk::Label::new(&recipe.name as &str);
-        row.add(&widget);
+        let widget = gtk::Button::new_with_label(&recipe.name as &str);
+        recipies_list.add(&widget);
         
         let book_pane_clone = book_pane.clone();
         let recipe_id = recipe.id;
         let data_clone = data.clone();
-        row.connect_activate(move |_| {
+        widget.connect_clicked(move |_| {
             show_recipe_content(&data_clone, &book_pane_clone, recipe_id);
         });
         
@@ -96,7 +89,8 @@ fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recip
     let book_pane_clone = book_pane.clone();
     let data_clone = data.clone();
     modify_but.connect_clicked(move |_| {
-        show_recipe_edit(&data_clone, &book_pane_clone , recipe_id);
+        data_clone.borrow_mut().clone_into_edited_recipe(recipe_id);
+        show_recipe_edit(&data_clone, &book_pane_clone);
     });
     
     // Ingredients list
@@ -116,12 +110,14 @@ fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recip
     frame.show_all();
 }
 
-fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_id : Id) {
+// don't forget to set up data into Data.edited_recipe before call
+fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
 
-    data.borrow_mut().clone_into_edited_recipe(recipe_id);
-
-    let recipe = data.borrow().get_recipe(recipe_id).unwrap().clone();
     book_pane.get_child2().unwrap().destroy();
+    
+    let recipe = data.borrow().edited_recipe.clone();
+    let recipe_id = data.borrow().edited_recipe.id;
+
     
     let edit_pane = gtk::Paned::new(gtk::Orientation::Horizontal);
     book_pane.add2(&edit_pane);
@@ -130,8 +126,28 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_i
     let frame = gtk::Frame::new(Some(&recipe.name as &str));
     edit_pane.add1(&frame);
     
-    let ingredients = give_ingredients_list(data);
-    edit_pane.add2(&ingredients);
+    // Ingredients Catalog on the right pane
+    let list_ingr = gtk::ListBox::new();
+    for i in data.borrow().iter_ingredients() {
+        let widget = gtk::Button::new_with_label(&i.name as &str);
+        list_ingr.add(&widget);
+        
+        // add new ingredient to the recipe
+        let data_clone = data.clone();
+        let new_ingr_id = i.id;
+        let book_pane_clone = book_pane.clone();
+        widget.connect_clicked(move |_| {
+            let ingr = data_clone.borrow()
+                .get_ingredient(new_ingr_id).unwrap().clone();
+            data_clone.borrow_mut().edited_recipe
+                .ingredients.insert(new_ingr_id, ingr);
+            // redraw all
+            show_recipe_edit(&data_clone, &book_pane_clone);
+        });
+        
+    }
+    list_ingr.set_selection_mode(gtk::SelectionMode::None);
+    edit_pane.add2(&list_ingr);
     
     let grid = gtk::Grid::new();
     frame.add(&grid);
