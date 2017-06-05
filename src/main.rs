@@ -224,6 +224,21 @@ fn show_recipe_edit(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned) {
         });
         
         line.add(&gtk::Label::new(&i.name as &str));
+        
+        // ingredient removing
+        let rm_but = gtk::Button::new_with_label("X");
+        line.add(&rm_but);
+        
+        let data_clone = data.clone();
+        let i_id = i.id;
+        let book_pane_clone = book_pane.clone();
+        rm_but.connect_clicked(move |_| {
+            data_clone.borrow_mut().edited_recipe
+                .ingredients.remove(&i_id);
+            // redraw all
+            show_recipe_edit(&data_clone, &book_pane_clone);
+        });
+        
     }
     
     // Instruction text

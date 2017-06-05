@@ -3,19 +3,34 @@
 TODO
 =====
 
+Export of the grocery and the planning to a pdf file.
+
+Export of the grocery and the planning to a mardown file.
+
+Data model for planning and grocery list history
+
+Data model for recurring item purchase.
+
+Data compution to sum ingredient from planning into grocery list.
+
+Export of the grocery and the planning to a mardown file.
+
+Data model for grocery list.
+
+Data model for planning with days, lunchs.
+
 GUI deletion of recipe.
 
 GUI creation of a new recipe.
 
-GUI edition of recipe : edition of recipe name.
-
-GUI edition of recipe: ingredient removing.
-
 GUI edition of recipe: renaming of recipe.
+
 
 
 DONE
 =====
+
+GUI edition of recipe: ingredient removing.
 
 GUI edition of recipe: ingredient quantity value and unit edition.
 
