@@ -126,6 +126,19 @@ fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recip
         show_recipe_edit(&data_clone, &book_pane_clone);
     });
     
+    // Delete Button
+    let del_but = gtk::Button::new_with_label("Supprimer");
+    grid.add(&del_but);
+    
+    let book_pane_clone = book_pane.clone();
+    let data_clone = data.clone();
+    del_but.connect_clicked(move |_| {
+        data_clone.borrow_mut().remove_recipe(recipe_id);
+        book_pane_clone.get_child2().unwrap().destroy();
+        book_pane_clone.add2(&gtk::Label::new("Recette suprimée"));
+        book_pane_clone.show_all();
+    });
+    
     // Ingredients list
     grid.add(&gtk::Label::new("Ingrédients"));
     

@@ -87,6 +87,10 @@ impl Data {
         self.book.recipes.insert(recipe.id, recipe.clone());
     }
         
+    pub fn remove_recipe(&mut self, id : Id) {
+        self.book.recipes.remove(&id);
+    }
+        
     pub fn get_recipe(&self, id : Id) -> Option<&Recipe> {
         self.book.recipes.get(&id)
     }
