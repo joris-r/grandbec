@@ -22,6 +22,8 @@ Data model for planning with days, lunchs.
 GUI edition of recipe: renaming of recipe. Update name in the left pane
 recipes list.
 
+Refactoring: think about a better gui architecture 
+
 GUI grocery section deletion.
 GUI grocery section renaming.
 GUI grocery section creation.
@@ -38,13 +40,16 @@ GUI ingredient deletion
 GUI ingredient renaming
 GUI ingredient creation
 
+Refactoring: separate GUI about recipe
+
 GUI deletion of recipe.
 
-GUI creation of a new recipe.
 
 
 DONE
 =====
+
+GUI creation of a new recipe.
 
 GUI edition of recipe: renaming of recipe.
 

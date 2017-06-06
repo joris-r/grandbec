@@ -36,20 +36,40 @@ fn main_gui(data : Rc<RefCell<Data>>) {
         Inhibit(false)
     });
         
-    setup(window.clone(), data.clone());
+    let notebook = gtk::Notebook::new();
+    window.add(&notebook);
+    
+    setup(&notebook, &data);
     
     window.show_all();
     gtk::main();
 }
 
-fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
+fn setup(notebook : &gtk::Notebook, data : &Rc<RefCell<Data>>) {
 
-    let notebook = gtk::Notebook::new();
-    window.add(&notebook);
+    let recipe_zone = gtk::Grid::new();
+    notebook.append_page(&recipe_zone, Some(&gtk::Label::new("Recettes")));
+    recipe_zone.set_orientation(gtk::Orientation::Vertical);
+    
+    let new_but = gtk::Button::new_with_label("+");
+    recipe_zone.add(&new_but);
+
+    let notebook_clone = notebook.clone();
+    let data_clone = data.clone();
+    let recipe_zone_clone = recipe_zone.clone();
+    new_but.connect_clicked(move |_| {
+        data_clone.borrow_mut().add_recipe( & Recipe::new(
+            "recette",
+            "",
+        ));
+        recipe_zone_clone.destroy();
+        setup(&notebook_clone, &data_clone);
+    });
+
     
     let book_pane = gtk::Paned::new(gtk::Orientation::Horizontal);
     book_pane.set_wide_handle(true);
-    notebook.append_page(&book_pane, Some(&gtk::Label::new("Recettes")));
+    recipe_zone.add(&book_pane);
     
     let recipies_list = gtk::ListBox::new();
     
@@ -79,6 +99,8 @@ fn setup(window : gtk::Window, data : Rc<RefCell<Data>>) {
         });
         
     }
+    
+    recipe_zone.show_all();
 }
 
 fn show_recipe_content(data : &Rc<RefCell<Data>>, book_pane : &gtk::Paned, recipe_id : Id) {
