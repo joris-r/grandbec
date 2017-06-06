@@ -43,12 +43,11 @@ GUI ingredient deletion
 GUI ingredient renaming
 GUI ingredient creation
 
-Refactoring: separate GUI about recipe
-
-
 
 DONE
 =====
+
+Refactoring: separate GUI about recipe
 
 GUI deletion of recipe.
 
