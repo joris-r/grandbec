@@ -19,13 +19,11 @@ Data model for grocery list.
 
 Data model for planning with days, lunchs.
 
-GUI edition of recipe: renaming of recipe. Update name in the left pane
-recipes list. Same thing for recipe deletion.
+Sort ingredient list in GUI.
 
-Refactoring: think about a better gui architecture with object that contains
-widget and related data clone.
+GUI: recipe creation should create the recipe only after validation
 
-Do a mockup with glade in order to do a more ergonomic et nicer gui layout.
+GUI: the choice of ingredient (to add in a recipe) must include other recipe
 
 GUI grocery section deletion.
 GUI grocery section renaming.
@@ -46,6 +44,12 @@ GUI ingredient creation
 
 DONE
 =====
+
+Refactoring: think about a better gui architecture with object that contains
+widget and related data clone.
+
+GUI: edition of recipe: renaming of recipe. Update name in the left pane
+recipes list. Same thing for recipe deletion.
 
 Refactoring: separate GUI about recipe
 

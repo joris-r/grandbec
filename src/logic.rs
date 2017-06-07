@@ -14,8 +14,6 @@ pub struct Data {
     planning : Planning,
     history : History,
     stock : Stock,
-    
-    pub edited_recipe : Recipe,
 }
 
 impl Data {
@@ -32,13 +30,6 @@ impl Data {
             planning : Planning {},
             history : History {},
             stock : Stock {},
-            
-            edited_recipe : Recipe {
-                id : Id::new(),
-                name : "".to_string(),
-                note : "".to_string(),
-                ingredients : HashMap::new(),
-            }
         }
     }
     
@@ -97,17 +88,6 @@ impl Data {
     
     pub fn iter_recipes(&self) -> hash_map::Values<Id, Recipe> {
         self.book.recipes.values()
-    }
-    
-    pub fn clone_into_edited_recipe(&mut self, id : Id) {
-        let r = self.book.recipes.get(&id).unwrap();
-        self.edited_recipe = r.clone();
-    }
-    
-    pub fn save_edited_recipe(&mut self) {
-        self.book.recipes.insert(
-            self.edited_recipe.id,
-            self.edited_recipe.clone());
     }
     
 } // impl Data
