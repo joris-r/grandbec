@@ -77,6 +77,7 @@ impl GuiRecipe {
                     None => ()
                 }
                 self.grid = gtk::Grid::new();
+                self.grid.set_row_spacing(5);
                 self.main_widget.add1(&self.grid);
                 let mut line = 0;
                 
@@ -96,7 +97,10 @@ impl GuiRecipe {
                 });
                 
                 // show name of the recipe
-                let name_label = gtk::Label::new(&recipe.name as &str);
+                let name_label = gtk::Label::new("");
+                let name : &str =
+                    &format!("<b><span size=\"large\">{}</span></b>",recipe.name);
+                name_label.set_markup(name);
                 self.grid.attach(&name_label, 0, line, 1, 1);
                 line += 1;
                 
@@ -105,7 +109,8 @@ impl GuiRecipe {
                 line += 1;
                 
                 // Ingredients list title
-                let ingr_label = gtk::Label::new("Ingrédients");
+                let ingr_label = gtk::Label::new("");
+                ingr_label.set_markup("<b>Ingrédients</b>");
                 self.grid.attach(&ingr_label, 0, line, 1, 1);
                 line += 1;
                 
@@ -122,7 +127,8 @@ impl GuiRecipe {
                 line += 1;
                 
                 // Instruction text
-                let label_instr = gtk::Label::new("Recette");
+                let label_instr = gtk::Label::new("");
+                label_instr.set_markup("<b>Recette</b>");
                 self.grid.attach(&label_instr, 0, line, 1, 1);
                 line += 1;
                 

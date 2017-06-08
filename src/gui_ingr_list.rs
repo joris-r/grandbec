@@ -47,7 +47,10 @@ impl GuiIngrList {
     }
     
     pub fn populate_ingr(&self, target : &Rc<RefCell<GuiRecipe>>) {
-        let title = gtk::Label::new("Ingrédients");
+        self.depopulate();
+        
+        let title = gtk::Label::new("");
+        title.set_markup("<b>Ingrédients</b>");
         let row = gtk::ListBoxRow::new();
         row.add(&title);
         row.set_selectable(false);
@@ -65,6 +68,26 @@ impl GuiIngrList {
                 target_clone.borrow_mut().add_ingredient(&i_clone);
             });
 
+        }
+        
+        let title = gtk::Label::new("");
+        let row = gtk::ListBoxRow::new();
+        row.add(&title);
+        row.set_selectable(false);
+        self.list.add(&row);
+        
+        let title = gtk::Label::new("");
+        title.set_markup("<b>Recettes</b>");
+        let row = gtk::ListBoxRow::new();
+        row.add(&title);
+        row.set_selectable(false);
+        self.list.add(&row);
+        
+        for i in self.data.borrow().iter_recipes() {
+            let name = gtk::Label::new(&i.name as &str);
+            let row = gtk::ListBoxRow::new();
+            row.add(&name);
+            self.list.add(&row);
         }
         
         self.list.show_all();
