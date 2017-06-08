@@ -174,6 +174,13 @@ impl Group {
     }
 }
 
+impl fmt::Display for Group {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.name)
+    }
+}
+
+
 #[derive(Clone, PartialEq, Eq)]
 pub struct Section {
     pub id : Id,

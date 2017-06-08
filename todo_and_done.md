@@ -45,6 +45,8 @@ GUI ingredient creation
 DONE
 =====
 
+GUI ingredient show
+
 Refactoring: think about a better gui architecture with object that contains
 widget and related data clone.
 

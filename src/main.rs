@@ -13,7 +13,7 @@ extern crate serde_derive;
 mod logic; use logic::*;
 mod file; use file::*;
 // mod gui_planning;
-// mod gui_ingr;
+mod gui_goods;
 mod gui_main; use gui_main::*;
 mod gui_book;
 mod gui_recipe_list;

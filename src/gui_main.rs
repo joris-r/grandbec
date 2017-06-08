@@ -7,10 +7,12 @@ use std::cell::*;
 use logic::*;
 
 use gui_book::*;
+use gui_goods::*;
 
 pub struct GuiMain {
     notebook : gtk::Notebook,
     gui_book : GuiBook,
+    gui_goods : GuiGoods,
 }
 
 impl GuiMain {
@@ -28,6 +30,7 @@ impl GuiMain {
         let mut gs = GuiMain {
             notebook : gtk::Notebook::new(),
             gui_book : GuiBook::new(&data),
+            gui_goods : GuiGoods::new(&data),
         };
         window.add(&gs.notebook);
         gs.setup();
@@ -38,7 +41,7 @@ impl GuiMain {
     
     fn setup(&mut self){
         self.notebook.append_page(
-            &gtk::Label::new("TODO"),
+            &self.gui_goods.get_main_widget(),
             Some(&gtk::Label::new("Articles")));
         
         self.notebook.append_page(
