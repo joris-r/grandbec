@@ -19,14 +19,13 @@ pub struct GuiBook {
 impl GuiBook {
     pub fn new(data : &Rc<RefCell<Data>>) -> GuiBook {
         let grl = Rc::new(RefCell::new(GuiRecipeList::new(data)));
-        let mut gs = GuiBook {
+        let gs = GuiBook {
             data : data.clone(),
             main_widget : gtk::Paned::new(gtk::Orientation::Horizontal),
             gui_recipes_list : grl.clone(),
             gui_recipe : Rc::new(RefCell::new(GuiRecipe::new(data, grl))),
         };
         gs.gui_recipe.borrow_mut().set_myself(&gs.gui_recipe);
-        gs.setup();
         gs
     }
     
@@ -34,7 +33,10 @@ impl GuiBook {
         self.main_widget.clone().upcast::<gtk::Widget>()
     }
     
-    fn setup(&mut self){
+    pub fn setup(&mut self){
+    
+        self.gui_recipes_list.borrow_mut().setup();
+        self.gui_recipe.borrow_mut().setup();
     
         self.main_widget.set_wide_handle(true);
         

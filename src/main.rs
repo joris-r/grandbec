@@ -30,7 +30,8 @@ fn main(){
     let data : Rc<RefCell<Data>> = Rc::new(RefCell::new(Data::new()));
     load_all(&mut data.borrow_mut(), std::path::Path::new("ressources"));
     
-    let _main_gui = GuiMain::new(&data);
+    let mut main_gui = GuiMain::new(&data);
+    main_gui.setup();
     
     save_all(& data.borrow(), std::path::Path::new("."));
 }

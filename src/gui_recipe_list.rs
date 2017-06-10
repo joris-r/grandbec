@@ -17,13 +17,12 @@ pub struct GuiRecipeList {
 
 impl GuiRecipeList {
     pub fn new(data : &Rc<RefCell<Data>>) -> GuiRecipeList {
-        let mut gs = GuiRecipeList {
+        let gs = GuiRecipeList {
             data : data.clone(),
             recipes_list : gtk::ListBox::new(),
             new_but : gtk::Button::new_with_label("Ajouter"),
             info : HashMap::new(),
         };
-        gs.setup();
         gs
     }
     
@@ -31,7 +30,7 @@ impl GuiRecipeList {
         self.recipes_list.clone().upcast::<gtk::Widget>()
     }
     
-    fn setup(&mut self){
+    pub fn setup(&mut self){
         
         // workaround for the activation problem
         self.recipes_list.set_selection_mode(gtk::SelectionMode::Single);

@@ -15,11 +15,10 @@ pub struct GuiIngrList {
 
 impl GuiIngrList {
     pub fn new(data : &Rc<RefCell<Data>>) -> GuiIngrList {
-        let mut gs = GuiIngrList {
+        let gs = GuiIngrList {
             data : data.clone(),
             list : gtk::ListBox::new(),
         };
-        gs.setup();
         gs
     }
     
@@ -27,7 +26,7 @@ impl GuiIngrList {
         self.list.clone().upcast::<gtk::Widget>()
     }
     
-    fn setup(&mut self){
+    pub fn setup(&mut self){
         
         // workaround for the activation problem
         self.list.set_selection_mode(gtk::SelectionMode::Single);

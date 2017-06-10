@@ -22,7 +22,7 @@ pub struct GuiRecipe {
 
 impl GuiRecipe {
     pub fn new(data : &Rc<RefCell<Data>>, gui_recipe_list : Rc<RefCell<GuiRecipeList>>) -> GuiRecipe {
-        let mut gs = GuiRecipe {
+        let gs = GuiRecipe {
             data : data.clone(),
             main_widget : gtk::Paned::new(gtk::Orientation::Horizontal),
             recipe : None,
@@ -31,7 +31,6 @@ impl GuiRecipe {
             gui_recipe_list : gui_recipe_list,
             catal_ingr : GuiIngrList::new(&data.clone()),
         };
-        gs.setup();
         gs
     }
     
@@ -43,7 +42,9 @@ impl GuiRecipe {
         self.main_widget.clone().upcast::<gtk::Widget>()
     }
     
-    fn setup(&mut self){
+    pub fn setup(&mut self){
+    
+        self.catal_ingr.setup();
     
         self.main_widget.set_wide_handle(true);
         self.grid.set_orientation(gtk::Orientation::Vertical);
@@ -116,7 +117,7 @@ impl GuiRecipe {
                 
                 // Ingredients list
                 for i in recipe.ingredients.values() {
-                    let s = format!("{} {}", i.name, (*i).quantity);
+                    let s = format!("{} : {}", (*i).quantity, i.name);
                     let label = gtk::Label::new(&s as &str);
                     self.grid.attach(&label, 0, line, 1, 1);
                     line += 1;

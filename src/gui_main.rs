@@ -10,38 +10,38 @@ use gui_book::*;
 use gui_goods::*;
 
 pub struct GuiMain {
+    window : gtk::Window,
     notebook : gtk::Notebook,
     gui_book : GuiBook,
-    gui_goods : GuiGoods,
+    gui_goods : Rc<RefCell<GuiGoods>>,
 }
 
 impl GuiMain {
     pub fn new(data : &Rc<RefCell<Data>>) -> GuiMain {
-
-        let window = gtk::Window::new(gtk::WindowType::Toplevel);
-        window.set_size_request(640,480);
-        
-        window.set_title("Grand Bec Project");
-        window.connect_delete_event(|_, _| {
+        let gui_main = GuiMain {
+            window : gtk::Window::new(gtk::WindowType::Toplevel),
+            notebook : gtk::Notebook::new(),
+            gui_book : GuiBook::new(&data),
+            gui_goods : Rc::new(RefCell::new(GuiGoods::new(&data))),
+        };
+        gui_main.gui_goods.borrow_mut().set_myself(&gui_main.gui_goods);
+        gui_main
+    }
+    
+    pub fn setup(&mut self){
+        self.window.set_size_request(640,480);
+        self.window.set_title("Grand Bec Project");
+        self.window.connect_delete_event(|_, _| {
             gtk::main_quit();
             Inhibit(false)
         });
         
-        let mut gs = GuiMain {
-            notebook : gtk::Notebook::new(),
-            gui_book : GuiBook::new(&data),
-            gui_goods : GuiGoods::new(&data),
-        };
-        window.add(&gs.notebook);
-        gs.setup();
-        window.show_all();
-        gtk::main();
-        gs
-    }
-    
-    fn setup(&mut self){
+        self.gui_book.setup();
+        self.gui_goods.borrow_mut().setup();
+        
+        self.window.add(&self.notebook);
         self.notebook.append_page(
-            &self.gui_goods.get_main_widget(),
+            &self.gui_goods.borrow().get_main_widget(),
             Some(&gtk::Label::new("Articles")));
         
         self.notebook.append_page(
@@ -59,6 +59,9 @@ impl GuiMain {
         self.notebook.append_page(
             &gtk::Label::new("TODO"),
             Some(&gtk::Label::new("Historique")));
+            
+        self.window.show_all();
+        gtk::main();
 
     }
     

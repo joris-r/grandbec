@@ -65,8 +65,55 @@ impl Data {
         self.catalog.ingredients.insert(ingredient.id, ingredient.clone());
     }
     
+    pub fn is_ingredient_used(&self, id : Id) -> bool {
+        for recipe in self.book.recipes.values() {
+            for ingr in recipe.ingredients.values() {
+                if ingr.id == id {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    pub fn new_ingredient(&mut self, name : &str) -> &Ingredient {
+    
+        // choose one arbitrary group 
+        let mut g = None;
+        for x in self.catalog.groups.values() {
+            g = Some(x.clone());
+            break;
+         }
+         let g = g.unwrap();
+         
+        // choose one arbitrary section
+        let mut s = None;
+        for x in self.catalog.sections.values() {
+            s = Some(x.clone());
+            break;
+         }
+         let s = s.unwrap();
+    
+        let i = Ingredient::new(
+            name,
+            &g,
+            &s,
+            &Quantity{val : 1.0, unit : Unit::Portion});
+            
+        self.add_ingredient(&i);
+        self.get_ingredient(i.id).unwrap()
+    }
+    
     pub fn get_ingredient(&self, id : Id) -> Option<&Ingredient> {
         self.catalog.ingredients.get(&id)
+    }
+    
+    pub fn remove_ingredient(&mut self, id : Id) {
+        self.catalog.ingredients.remove(&id);
+    }
+    
+    pub fn get_ingredient_mut(&mut self, id : Id) -> &mut Ingredient {
+        self.catalog.ingredients.get_mut(&id).unwrap()
     }
     
     pub fn iter_ingredients(&self) -> hash_map::Values<Id, Ingredient> {

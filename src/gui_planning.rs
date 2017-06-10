@@ -13,11 +13,10 @@ pub struct GuiPlanning {
 
 impl GuiPlanning {
     pub fn new(data : &Rc<RefCell<Data>>, main_notebook : &gtk::Notebook) -> GuiPlanning {
-        let mut gs = GuiPlanning {
+        let gs = GuiPlanning {
             data : data.clone(),
             main_notebook : main_notebook.clone(),
         };
-        gs.setup();
         gs
     }
     

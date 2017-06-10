@@ -3,6 +3,10 @@
 TODO
 =====
 
+Add creation time on data.
+
+Add a version number on json file.
+
 Export of the grocery and the planning to a pdf file.
 
 Export of the grocery and the planning to a mardown file.
@@ -23,7 +27,8 @@ Sort ingredient list in GUI.
 
 GUI: recipe creation should create the recipe only after validation
 
-GUI: the choice of ingredient (to add in a recipe) must include other recipe
+GUI: the "ingredient" of a recipe can be another recipe. Data design and
+gui design must be done.
 
 GUI grocery section deletion.
 GUI grocery section renaming.
@@ -33,19 +38,21 @@ GUI food group deletion.
 GUI food group renaming.
 GUI food group creation.
 
-GUI ingredient edit grocery section
-GUI ingredient edit food group
-GUI ingredient edit default quantity
 
-GUI ingredient deletion
-GUI ingredient renaming
-GUI ingredient creation
 
 
 DONE
 =====
 
-GUI ingredient show
+GUI restric ingredient deletion to unused ingredient.
+GUI ingredient creation.
+GUI ingredient deletion.
+GUI ingredient edit grocery section.
+GUI ingredient edit food group.
+GUI ingredient edit default quantity.
+GUI ingredient renaming.
+GUI ingredient show.
+
 
 Refactoring: think about a better gui architecture with object that contains
 widget and related data clone.
