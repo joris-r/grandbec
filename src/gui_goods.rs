@@ -197,21 +197,33 @@ impl GuiGoods {
         });
         
         // Deletion of ingredient
-        if ! self.data.borrow().is_ingredient_used(i.id) {
-            let rm_but = gtk::Button::new_with_label("X");
-            self.grid.attach(&rm_but, 6, line, 1, 1);
-            
-            let data_clone = self.data.clone();
-            let i_id = i.id;
-            let myself = self.myself.clone().unwrap();
-            rm_but.connect_clicked(move |_| {
+        let rm_but = gtk::Button::new_with_label("X");
+        self.grid.attach(&rm_but, 6, line, 1, 1);
+        
+        let data_clone = self.data.clone();
+        let i_id = i.id;
+        let myself = self.myself.clone().unwrap();
+        rm_but.connect_clicked(move |w| {
+            if ! data_clone.borrow().is_ingredient_used(i_id) {
                 {
                     let mut data = data_clone.borrow_mut();
                     data.remove_ingredient(i_id);
                 }
                 myself.borrow_mut().show();
-            });
-        }
+            } else {
+                let md = gtk::MessageDialog::new(
+                    Some(&w.get_toplevel().unwrap().downcast::<gtk::Window>().unwrap()),
+                    gtk::DIALOG_MODAL,
+                    gtk::MessageType::Warning,
+                    gtk::ButtonsType::Ok,
+                    "Suppression impossible : l'ingrédient est utilisé."
+                );
+                md.connect_response(|w,_| {
+                    w.destroy();
+                });
+                md.show();
+            }
+        });
     }
     
 }
